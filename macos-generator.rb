@@ -37,8 +37,8 @@ array.each_with_index do |name, nr|
   end
 end
 
-FileUtils.mkdir_p('src/consts')
+FileUtils.mkdir_p('src/apple')
 
-File.open('src/consts/apple.zig', 'wb') do |f|
+File.open('src/apple/consts.zig', 'wb') do |f|
   f.print content
 end

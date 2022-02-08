@@ -15,11 +15,12 @@ format() {
 }
 
 generate() {
+  mkdir -p src/linux/"$1"
   echo "Generating ${1}..."
-  fetch "$2" | format > src/consts/linux/"$1".zig
+  fetch "$2" | format > src/linux/"$1"/consts.zig
 }
 
-mkdir -p src/consts/linux
+mkdir -p src/linux
 
 generate x86_64 x64
 generate aarch64 arm64
