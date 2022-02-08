@@ -1,4 +1,4 @@
-// NR: %eax return: %eax paramters: %ebx, %ecx, %edx, %esi, %edi, %ebp
+// NR: %eax return: %eax parameters: %ebx, %ecx, %edx, %esi, %edi, %ebp
 
 pub inline fn syscall0(n: usize) usize {
     return asm volatile ("int $$0x80"

@@ -1,4 +1,4 @@
-// NR: %rax return %rax parameters: %rdi, %rsi, %rdx, %r10, %r8, %r9
+// NR: %rax return: %rax parameters: %rdi, %rsi, %rdx, %r10, %r8, %r9
 
 pub inline fn syscall0(n: usize) usize {
     return asm volatile ("syscall"

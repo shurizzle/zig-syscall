@@ -1,4 +1,4 @@
-// NR: %r7 return %r0 paramters: %r0, %r1, %r2, %r3, %r4, %r5
+// NR: %r7 return: %r0 parameters: %r0, %r1, %r2, %r3, %r4, %r5
 
 pub inline fn syscall0(n: usize) usize {
     return asm volatile ("swi 0"
