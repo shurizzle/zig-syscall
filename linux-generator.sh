@@ -81,8 +81,8 @@ mkdir -p src/linux
 generate x86_64 x64 \
   syscall rax rax rdi rsi rdx r10 r8 r9 '"rcx", "r11", "memory"'
 generate aarch64 arm64 \
-  'svc 0' x8 x0 x0 x1 x2 x3 x4 x5 '"memory", "cc"'
+  'svc #0' x8 x0 x0 x1 x2 x3 x4 x5 '"memory", "cc"'
 generate i386 x86 \
-  'int $$0x80' eax eax ebx ecx edx esi edi ebp '"memory", "cc"'
+  'int $0x80' eax eax ebx ecx edx esi edi ebp '"memory", "cc"'
 generate arm arm \
-  'swi 0' r7 r0 r0 r1 r2 r3 r4 r5 '"memory", "cc"'
+  'svc #0' r7 r0 r0 r1 r2 r3 r4 r5 '"memory", "cc"'

@@ -1,7 +1,7 @@
 // NR: %eax return: %eax parameters: %ebx, %ecx, %edx, %esi, %edi, %ebp
 
 pub inline fn syscall0(n: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
         : "memory", "cc"
@@ -9,7 +9,7 @@ pub inline fn syscall0(n: usize) usize {
 }
 
 pub inline fn syscall1(n: usize, arg1: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
           [arg1] "{ebx}" (arg1),
@@ -18,7 +18,7 @@ pub inline fn syscall1(n: usize, arg1: usize) usize {
 }
 
 pub inline fn syscall2(n: usize, arg1: usize, arg2: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
           [arg1] "{ebx}" (arg1),
@@ -28,7 +28,7 @@ pub inline fn syscall2(n: usize, arg1: usize, arg2: usize) usize {
 }
 
 pub inline fn syscall3(n: usize, arg1: usize, arg2: usize, arg3: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
           [arg1] "{ebx}" (arg1),
@@ -39,7 +39,7 @@ pub inline fn syscall3(n: usize, arg1: usize, arg2: usize, arg3: usize) usize {
 }
 
 pub inline fn syscall4(n: usize, arg1: usize, arg2: usize, arg3: usize, arg4: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
           [arg1] "{ebx}" (arg1),
@@ -51,7 +51,7 @@ pub inline fn syscall4(n: usize, arg1: usize, arg2: usize, arg3: usize, arg4: us
 }
 
 pub inline fn syscall5(n: usize, arg1: usize, arg2: usize, arg3: usize, arg4: usize, arg5: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
           [arg1] "{ebx}" (arg1),
@@ -64,7 +64,7 @@ pub inline fn syscall5(n: usize, arg1: usize, arg2: usize, arg3: usize, arg4: us
 }
 
 pub inline fn syscall6(n: usize, arg1: usize, arg2: usize, arg3: usize, arg4: usize, arg5: usize, arg6: usize) usize {
-    return asm volatile ("int $$0x80"
+    return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
           [arg1] "{ebx}" (arg1),

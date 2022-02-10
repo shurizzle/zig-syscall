@@ -82,4 +82,4 @@ def generate_calls(arch, inst, nr, ret, arg1, arg2, arg3, arg4, arg5, arg6, clob
 end
 
 generate_calls 'x86_64', 'syscall', 'rax', 'rax', 'rdi', 'rsi', 'rdx', 'r10', 'r8', 'r9', '"rcx", "r11", "memory"'
-generate_calls 'aarch64', 'svc $$0x80', 'x8', 'x0', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', '"memory", "cc"'
+generate_calls 'aarch64', 'svc 0x80', 'x8', 'x0', 'x0', 'x1', 'x2', 'x3', 'x4', 'x5', '"memory", "cc"'
