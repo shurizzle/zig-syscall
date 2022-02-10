@@ -9,7 +9,7 @@ TRAPS_URL = 'https://opensource.apple.com/source/xnu/xnu-4570.41.2/osfmk/kern/sy
 
 puts "Generating consts..."
 
-content = "// BSD's syscalls\n"
+content = "pub const SYS = enum(usize) {\n    // BSD's syscalls\n"
 URI.open(URL) do |f|
   f.each_line do |line|
     if line =~ /^(\d+)\s+[a-zA-Z0-9_]+\s+\w+\s+\{\s*[a-zA-Z0-9_]+\s*([a-zA-Z0-9_]+)\s*\(.*?\)\s*(?:NO_SYSCALL_STUB\s*)?;\s*\}.*$/
@@ -18,13 +18,13 @@ URI.open(URL) do |f|
       nr = nr.to_i
       nr |= 0x2000000
       if name !~ /^e?nosys/
-        content << "pub const SYS_#{name} = 0x#{nr.to_s(16)};\n"
+        content << "    #{name} = 0x#{nr.to_s(16)},\n"
       end
     end
   end
 end
 
-content << "\n// Mach traps\n"
+content << "\n    // Mach traps\n"
 URI.open(TRAPS_URL) {|f| f.read } =~ /mach_syscall_name_table.+?{(.+?)}/m
 array = $1
 
@@ -35,9 +35,11 @@ eval "array = [#{array}]"
 array.each_with_index do |name, nr|
   if name != 'kern_invalid'
     nr |= 0x1000000
-    content << "pub const SYS_#{name} = 0x#{nr.to_s(16)};\n"
+    content << "    #{name} = 0x#{nr.to_s(16)},\n"
   end
 end
+
+content << "};\n"
 
 FileUtils.mkdir_p('src/apple')
 
@@ -46,7 +48,7 @@ File.open('src/apple/consts.zig', 'wb') do |f|
 end
 
 def generate_call(argno, inst, nr, ret, arg1, arg2, arg3, arg4, arg5, arg6, clobber_regs)
-  content = "pub inline fn syscall#{argno}(n: usize"
+  content = "pub inline fn syscall#{argno}(n: SYS"
   (1..argno).each do |i|
     content << ", arg#{i}: usize"
   end
@@ -71,6 +73,7 @@ def generate_calls(arch, inst, nr, ret, arg1, arg2, arg3, arg4, arg5, arg6, clob
   puts "Generating #{arch} calls..."
 
   content = "// NR: %#{nr} return: %#{ret} parameters: %#{arg1}, %#{arg2}, %#{arg3}, %#{arg4}, %#{arg5}, %#{arg6}\n"
+  content << "const SYS = @import(\"../consts.zig\").SYS;\n"
   (0..6).each do |i|
     content << "\n"
     content << generate_call(i, inst, nr, ret, arg1, arg2, arg3, arg4, arg5, arg6, clobber_regs)

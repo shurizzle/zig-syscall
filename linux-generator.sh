@@ -11,7 +11,9 @@ fetch() {
 }
 
 format() {
-  jq -r '.[] | select(.name | contains(" ") | not) | "pub const SYS_" + .name + " = " + .return + ";"'
+  echo "pub const SYS = enum(usize) {"
+  jq -r '.[] | select(.name | contains(" ") | not) | "    " + .name + " = " + .return + ","' | sed -e 's/ break / @"break" /g'
+  echo "};"
 }
 
 generate_consts() {
@@ -21,7 +23,7 @@ generate_consts() {
 
 
 _generate_call() {
-    local signature="pub inline fn syscall${1}(n: usize"
+    local signature="pub inline fn syscall${1}(n: SYS"
     local i
     for i in `seq 1 $1`; do
       signature="${signature}, arg${i}: usize"
@@ -58,6 +60,7 @@ _generate_call() {
 _generate_calls() {
     local i
     echo "// NR: %${2} return: %${3} parameters: %${4}, %${5}, %${6}, %${7}, %${8}, %${9}"
+    echo "const SYS = @import(\"./consts.zig\").SYS;"
 
     for i in `seq 0 6`; do
       echo

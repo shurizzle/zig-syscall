@@ -16,13 +16,13 @@ test "test" {
         else => @compileError("OS doesn't have tests :("),
     };
 
-    var _fd = @bitCast(isize, sc.syscall3(sc.SYS_open, @ptrToInt(filename), flags, @as(usize, 0o640)));
+    var _fd = @bitCast(isize, sc.syscall3(sc.SYS.open, @ptrToInt(filename), flags, @as(usize, 0o640)));
     try expect(_fd >= 0);
     var fd = @bitCast(usize, _fd);
 
-    try expect(sc.syscall3(sc.SYS_write, fd, @ptrToInt(content), content.len) == content.len);
+    try expect(sc.syscall3(sc.SYS.write, fd, @ptrToInt(content), content.len) == content.len);
 
-    try expect(sc.syscall1(sc.SYS_close, fd) == 0);
+    try expect(sc.syscall1(sc.SYS.close, fd) == 0);
 
     var file = try std.fs.cwd().openFile(filename, .{ .write = false, .read = true });
     errdefer file.close();
