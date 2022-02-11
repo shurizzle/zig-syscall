@@ -21,9 +21,8 @@ generate_consts() {
   fetch "$2" | format > src/linux/"$1"/consts.zig
 }
 
-
 _generate_call() {
-    local signature="pub inline fn syscall${1}(n: SYS"
+    local signature="inline fn syscall${1}(n: SYS"
     local i
     for i in `seq 1 $1`; do
       signature="${signature}, arg${i}: usize"
@@ -57,15 +56,43 @@ _generate_call() {
     echo "}"
 }
 
-_generate_calls() {
-    local i
-    echo "// NR: %${2} return: %${3} parameters: %${4}, %${5}, %${6}, %${7}, %${8}, %${9}"
-    echo "const SYS = @import(\"./consts.zig\").SYS;"
+__generate_call() {
+  local i
+  echo -n "syscall${1}(n"
+  for i in `seq 0 $(($1 - 1))`; do
+    echo -n ", args[${i}]"
+  done
+  echo -n ")"
+}
 
-    for i in `seq 0 6`; do
-      echo
-      _generate_call $i "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
-    done
+_generate_calls() {
+  local i
+  echo "// NR: %${2} return: %${3} parameters: %${4}, %${5}, %${6}, %${7}, %${8}, %${9}"
+  echo "const std = @import(\"std\");"
+  echo "const SYS = @import(\"./consts.zig\").SYS;"
+
+  for i in `seq 0 6`; do
+    echo
+    _generate_call $i "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}"
+  done
+
+  echo
+  echo "pub inline fn syscall(n: SYS, args: anytype) usize {"
+  echo "    const typ = @TypeOf(args);"
+  echo
+  echo "    comptime if (!std.meta.trait.isTuple(typ)) {"
+  echo "        @compileError(\"syscall only accept tuple as argument\");"
+  echo "    };"
+  echo "    const fun = comptime switch (args.len) {"
+  for i in `seq 0 6`; do
+    echo "        ${i} => syscall${i},"
+  done
+  echo "        else => @compileError(\"Unsupported arguments length\"),"
+  echo "    };"
+  echo "    const full_args = comptime .{n} ++ args;"
+  echo
+  echo "    return @call(.{}, fun, full_args);"
+  echo "}"
 }
 
 generate_calls() {

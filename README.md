@@ -17,13 +17,13 @@ Maybe you don't really want to. Just in case:
 ```zig
 const sc = @import("syscall");
 
-sc.syscall0(sc.SYS_example0);
-sc.syscall1(sc.SYS_example1, arg1);
-sc.syscall2(sc.SYS_example2, arg1, arg2);
-sc.syscall3(sc.SYS_example3, arg1, arg2, arg3);
-sc.syscall4(sc.SYS_example4, arg1, arg2, arg3, arg4);
-sc.syscall5(sc.SYS_example5, arg1, arg2, arg3, arg4, arg5);
-sc.syscall6(sc.SYS_example6, arg1, arg2, arg3, arg4, arg5, arg6);
+sc.syscall(sc.SYS_example0, .{});
+sc.syscall(sc.SYS_example1, .{ arg1 });
+sc.syscall(sc.SYS_example2, .{ arg1, arg2 });
+sc.syscall(sc.SYS_example3, .{ arg1, arg2, arg3 });
+sc.syscall(sc.SYS_example4, .{ arg1, arg2, arg3, arg4 });
+sc.syscall(sc.SYS_example5, .{ arg1, arg2, arg3, arg4, arg5 });
+sc.syscall(sc.SYS_example6, .{ arg1, arg2, arg3, arg4, arg5, arg6 });
 ```
 
 ### Support

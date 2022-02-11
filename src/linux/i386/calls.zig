@@ -1,7 +1,8 @@
 // NR: %eax return: %eax parameters: %ebx, %ecx, %edx, %esi, %edi, %ebp
+const std = @import("std");
 const SYS = @import("./consts.zig").SYS;
 
-pub inline fn syscall0(n: SYS) usize {
+inline fn syscall0(n: SYS) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -9,7 +10,7 @@ pub inline fn syscall0(n: SYS) usize {
     );
 }
 
-pub inline fn syscall1(n: SYS, arg1: usize) usize {
+inline fn syscall1(n: SYS, arg1: usize) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -18,7 +19,7 @@ pub inline fn syscall1(n: SYS, arg1: usize) usize {
     );
 }
 
-pub inline fn syscall2(n: SYS, arg1: usize, arg2: usize) usize {
+inline fn syscall2(n: SYS, arg1: usize, arg2: usize) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -28,7 +29,7 @@ pub inline fn syscall2(n: SYS, arg1: usize, arg2: usize) usize {
     );
 }
 
-pub inline fn syscall3(n: SYS, arg1: usize, arg2: usize, arg3: usize) usize {
+inline fn syscall3(n: SYS, arg1: usize, arg2: usize, arg3: usize) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -39,7 +40,7 @@ pub inline fn syscall3(n: SYS, arg1: usize, arg2: usize, arg3: usize) usize {
     );
 }
 
-pub inline fn syscall4(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usize) usize {
+inline fn syscall4(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usize) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -51,7 +52,7 @@ pub inline fn syscall4(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usiz
     );
 }
 
-pub inline fn syscall5(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usize, arg5: usize) usize {
+inline fn syscall5(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usize, arg5: usize) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -64,7 +65,7 @@ pub inline fn syscall5(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usiz
     );
 }
 
-pub inline fn syscall6(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usize, arg5: usize, arg6: usize) usize {
+inline fn syscall6(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usize, arg5: usize, arg6: usize) usize {
     return asm volatile ("int $0x80"
         : [ret] "={eax}" (-> usize),
         : [n] "{eax}" (n),
@@ -76,4 +77,25 @@ pub inline fn syscall6(n: SYS, arg1: usize, arg2: usize, arg3: usize, arg4: usiz
           [arg6] "{ebp}" (arg6),
         : "memory", "cc"
     );
+}
+
+pub inline fn syscall(n: SYS, args: anytype) usize {
+    const typ = @TypeOf(args);
+
+    comptime if (!std.meta.trait.isTuple(typ)) {
+        @compileError("syscall only accept tuple as argument");
+    };
+    const fun = comptime switch (args.len) {
+        0 => syscall0,
+        1 => syscall1,
+        2 => syscall2,
+        3 => syscall3,
+        4 => syscall4,
+        5 => syscall5,
+        6 => syscall6,
+        else => @compileError("Unsupported arguments length"),
+    };
+    const full_args = comptime .{n} ++ args;
+
+    return @call(.{}, fun, full_args);
 }
